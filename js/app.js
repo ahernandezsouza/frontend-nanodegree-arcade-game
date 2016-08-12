@@ -1,3 +1,16 @@
+var tile = {"width" : 101,
+            "height" : 62,
+            "vpadding" : 10,
+            "y": function(y){
+                var tiley = tile.height + y * (tile.height + tile.vpadding * 2);
+                return tiley;
+            },
+            "x": function(x){
+                var tilex = x * (tile.width);
+                return tilex;
+            }
+        };
+
 // Enemies our player must avoid
 var Enemy = function(dt, x, y) {
     // Variables applied to each of our instances go here,
@@ -17,19 +30,6 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 };
-var tile = {"width" : 101,
-            "height" : 62,
-            "vpadding" : 10,
-            "y": function(y){
-                var tiley = tile.height + y * (tile.height + tile.vpadding * 2);
-                return tiley;
-            },
-            "x": function(x){
-                var tilex = x * (tile.width);
-                return tilex;
-            }
-        };
-
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -52,7 +52,21 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-Player.prototype.handleInput = function() {
+Player.prototype.handleInput = function(keypressed) {
+    switch (keypressed){
+        case "left":
+            this.x-= 10;//'left'
+            break;
+        case "up":
+            this.y-= 10;//'up'
+            break;
+        case "right":
+            this.x+= 10;//'right'
+            break;
+        case "down":
+            this.y+= 10;//'down'
+            break;
+    }
 };
 
 // Now instantiate your objects.
