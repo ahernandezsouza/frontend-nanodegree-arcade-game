@@ -80,7 +80,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        //checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -115,8 +115,8 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
+            numRows = (canvas.height-108)/tile.height, // 50 83 37
+            numCols = canvas.width/tile.width,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -132,12 +132,11 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]),0,0, tile.width, tile.height/(83/170), col * tile.width, row * tile.height, tile.width, tile.height/(83/170));
             }
         }
 
         renderEntities();
-        showStrokeGrid();
     }
 
     /* This function is called by the render function and is called on each game
@@ -173,7 +172,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png'
     ]);
     Resources.onReady(init);
 
