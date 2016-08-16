@@ -1,9 +1,9 @@
-// Tile
+/* VARIABLES */
 var score = 0,
     c_width = 505,
     c_height = 606,
-    t_width = 5,
-    t_height = 6,
+    t_width = 6,
+    t_height = 7,
     messageLines = [""],
     tile = {"width" : c_width/t_width,//5
             "height" : (c_height-108)/t_height,//6
@@ -17,6 +17,9 @@ var score = 0,
             }
         };
 
+/* OBJECTS (Enemy and Player) */
+
+/////////////////////////////////////////////////////////////////////
 
 // Enemies our player must avoid
 var Enemy = function(dt, x, y) {
@@ -46,6 +49,8 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83));
 };
 
+/////////////////////////////////////////////////////////////////////
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -53,6 +58,7 @@ var Player = function(dt, x, y) {
     this.dt = dt;
     this.x = tile.x(x);
     this.y = tile.y(y)-10;
+    this.speed = 1;
     this.sprite = 'images/char-cat-girl.png';
     this.lives = 3;
 }
@@ -67,20 +73,20 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(keypressed) {
     switch (keypressed){
         case "left":
-            this.x-= tile.width;//'left'
+            this.x-= tile.width*player.speed;//'left'
             if (this.x <= -tile.width){this.x+= tile.width}
             break;
         case "up":
-            this.y-= tile.height;//'up'
+            this.y-= tile.height*player.speed;//'up'
             if (this.y <= -tile.height){this.y+= tile.height}
             break;
         case "right":
-            this.x+= tile.width;//'right'
-            if (this.x > tile.x(4)){this.x-= tile.width}
+            this.x+= tile.width*player.speed;//'right'
+            if (this.x > tile.x(t_width)){this.x-= tile.width}
             break;
         case "down":
-            this.y+= tile.height;//'down'
-            if (this.y > tile.y(4)){this.y-= tile.height}
+            this.y+= tile.height*player.speed;//'down'
+            if (this.y > tile.y(t_height-2)){this.y-= tile.height}
             break;
         case "space":
             RestartGame();
@@ -93,6 +99,8 @@ Player.prototype.handleInput = function(keypressed) {
             break;
     }
 };
+
+////////////////////////////////////////////////////////////////////////
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -117,7 +125,7 @@ var allEnemies = [
     enemy6
 ];
 
-var player = new Player(1, 0, 4);
+var player = new Player(1, 0, t_height-2);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -154,15 +162,17 @@ function checkCollisions(){
     });
 }
 
+//Set Gems (Appear and Disappear)
+
 function SetGem(){
     var delayGem = Date.now();
-
 }
 
-//Restart Game
+//Stop Game
 function StopGame(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
+        player.speed = 0;
     });
     messageLines = ["GAME OVER!","Press Spacebar to Continue"];
 }
@@ -170,11 +180,11 @@ function StopGame(){
 //Reset Game
 function ResetGame(){
     allEnemies.forEach(function(enemy) {
-//        enemy.x = tile.x(Rnd(5));
         enemy.speed = Rnd(3,6);
     });
     player.x = tile.x(0);
-    player.y = tile.y(4)-10;
+    player.y = tile.y(t_height-2)-10;
+    player.speed = 1;
 }
 
 //Restart Game
@@ -184,10 +194,12 @@ function RestartGame(){
     messageLines = [""];
 }
 
-//Random position
+//Random integer number between x and y
 function Rnd(x,y){
     return Math.floor((Math.random() * (y-x))) + x
 }
+
+//Show a Message in the middle of the screen
 
 function showMessage() {
     ctx.fillStyle = "#000";
@@ -201,10 +213,10 @@ function showMessage() {
 //Lives
 function showLives() {
     ctx.fillStyle = "#fff";
-    ctx.rect(0, 0, 400, 50);
+    ctx.rect(0, 0, 400, tile.height * .58);
     ctx.fill();
     ctx.fillStyle = "#000";
-    ctx.font = 'bolder 40px Arial';
+    ctx.font = 'bolder ' + tile.height * .5 +'px Arial';
     ctx.textBaseline = 'bottom';
     ctx.fillText("LIVES: ", 0, 50);
     for (var i = player.lives ; i > 0; i-=1){
