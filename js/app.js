@@ -1,10 +1,12 @@
 // Tile
-var MessageText ="",
-        c_width = 505,
-        c_height = 606;
-
-var tile = {"width" : c_width/5,//5
-            "height" : (c_height-108)/6,//6
+var score = 0,
+    c_width = 505,
+    c_height = 606,
+    t_width = 5,
+    t_height = 6,
+    messageLines = [""],
+    tile = {"width" : c_width/t_width,//5
+            "height" : (c_height-108)/t_height,//6
             "y": function(y){
                 var tiley = tile.height + y * tile.height;
                 return tiley;
@@ -15,28 +17,6 @@ var tile = {"width" : c_width/5,//5
             }
         };
 
-//Random position
-function tileRnd(x,y){
-    return Math.floor((Math.random() * x) - y)
-}
-
-function showMessage(message) {
-    ctx.fillStyle = "#000";
-    ctx.font = 'bolder 40px Arial';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(message, (c_width - ctx.measureText(message).width)/2, c_height/2);
-}
-
-//Lives
-function showLives() {
-    ctx.fillStyle = "#fff";
-    ctx.rect(0, 0, 200, 50);
-    ctx.fill();
-    ctx.fillStyle = "#000";
-    ctx.font = 'bolder 40px Arial';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText("LIVES: " + player.lives, 0, 50);
-}
 
 // Enemies our player must avoid
 var Enemy = function(dt, x, y) {
@@ -45,7 +25,7 @@ var Enemy = function(dt, x, y) {
     this.dt = dt;
     this.x = tile.x(x);
     this.y = tile.y(y)-20;
-    this.speed = 3;
+    this.speed = Rnd(3,6);
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
@@ -59,7 +39,7 @@ Enemy.prototype.update = function() {
     // all computers.
     this.x+= this.speed*this.dt;
 
-    if (this.x > tile.x(5)){this.x = -tile.x(1)}
+    if (this.x > tile.x(t_width)){this.x = -tile.x(1)}
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -82,12 +62,6 @@ Player.prototype.update = function(dt) {
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83));
-    for (var i = player.lives ; i > 0; i-=1){
-        ctx.drawImage(Resources.get('images/Heart.png'),
-            tile.x(3-i+2) + (tile.width * .25), 0 - tile.height * (170/83) * .1,
-            tile.width * .5, tile.height * (170/83) * .5//Where to Place
-        );
-    }
 };
 
 Player.prototype.handleInput = function(keypressed) {
@@ -108,7 +82,7 @@ Player.prototype.handleInput = function(keypressed) {
             this.y+= tile.height;//'down'
             if (this.y > tile.y(4)){this.y-= tile.height}
             break;
-        case "r":
+        case "space":
             RestartGame();
             break;
         case "a":
@@ -125,16 +99,22 @@ Player.prototype.handleInput = function(keypressed) {
 // Place the player object in a variable called player
 
 
-var enemy1 = new Enemy(1, tileRnd(5, 5), 0);
-var enemy2 = new Enemy(1, tileRnd(5, 5), 1);
-var enemy3 = new Enemy(1, tileRnd(5, 5), 2);
-var enemy4 = new Enemy(1, tileRnd(5, 5), 3);
+var enemy1 = new Enemy(1, Rnd(0,3), 0);
+var enemy2 = new Enemy(1, Rnd(0,t_width), 1);
+var enemy3 = new Enemy(1, Rnd(0,t_width), 2);
+var enemy4 = new Enemy(1, Rnd(0,2), 3);
+
+var enemy5 = new Enemy(1, Rnd(4,t_width), 0);
+var enemy6 = new Enemy(1, Rnd(3,t_width), 3);
+
 
 var allEnemies = [
     enemy1,
     enemy2,
     enemy3,
-    enemy4
+    enemy4,
+    enemy5,
+    enemy6
 ];
 
 var player = new Player(1, 0, 4);
@@ -147,7 +127,7 @@ document.addEventListener('keyup', function(e) {
         38: 'up',
         39: 'right',
         40: 'down',
-        82: 'r',
+        32: 'space',
         65: 'a',
         90: 'z'
     };
@@ -174,19 +154,24 @@ function checkCollisions(){
     });
 }
 
+function SetGem(){
+    var delayGem = Date.now();
+
+}
+
 //Restart Game
 function StopGame(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
     });
-    MessageText = "GAME OVER!";
+    messageLines = ["GAME OVER!","Press Spacebar to Continue"];
 }
 
 //Reset Game
 function ResetGame(){
     allEnemies.forEach(function(enemy) {
-        enemy.x = tile.x(tileRnd(5, 5));
-        enemy.speed = 3;
+//        enemy.x = tile.x(Rnd(5));
+        enemy.speed = Rnd(3,6);
     });
     player.x = tile.x(0);
     player.y = tile.y(4)-10;
@@ -196,5 +181,36 @@ function ResetGame(){
 function RestartGame(){
     ResetGame();
     player.lives = 3;
-    MessageText = "";
+    messageLines = [""];
+}
+
+//Random position
+function Rnd(x,y){
+    return Math.floor((Math.random() * (y-x))) + x
+}
+
+function showMessage() {
+    ctx.fillStyle = "#000";
+    ctx.font = 'bolder 30px Arial';
+    ctx.textBaseline = 'bottom';
+    for (var i = 0 ; i < messageLines.length; ++i){
+        ctx.fillText(messageLines[i], (c_width - ctx.measureText(messageLines[i]).width)/2, (c_height/2) + i*40);
+    };
+}
+
+//Lives
+function showLives() {
+    ctx.fillStyle = "#fff";
+    ctx.rect(0, 0, 400, 50);
+    ctx.fill();
+    ctx.fillStyle = "#000";
+    ctx.font = 'bolder 40px Arial';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText("LIVES: ", 0, 50);
+    for (var i = player.lives ; i > 0; i-=1){
+        ctx.drawImage(Resources.get('images/Heart.png'),
+            75 + tile.x(i)*.5, 0 - tile.height * (170/83) * .1,
+            tile.width * .5, tile.height * (170/83) * .5//Where to Place
+        );
+    }
 }

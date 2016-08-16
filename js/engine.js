@@ -145,7 +145,7 @@ var Engine = (function(global) {
         }
 
         renderEntities();
-        showMessage(MessageText);
+        showMessage();
         showLives();
     }
 
