@@ -1,19 +1,19 @@
 /* VARIABLES */
 var score = 0,
-    c_width = 505,
-    c_height = 606,
-    t_width = 6,
-    t_height = 7,
-    messageLines = [""],
-    tile = {"width" : c_width/t_width,//5
-            "height" : (c_height-108)/t_height,//6
+    c_width = 505, //Canvas Width
+    c_height = 606, //Canvas Height
+    t_width = 6, //Width in Tiles
+    t_height = 7,//Height in Tiles
+    messageLines = [""],//Message for Message Zone
+    tile = {"width" : c_width/t_width,// Tile Width in Pixels
+            "height" : (c_height-108)/t_height,// Tile Height in Pixels (Game Area)
             "y": function(y){
                 var tiley = tile.height + y * tile.height;
-                return tiley;
+                return tiley; //Convert Pixels to Tiles - Height
             },
             "x": function(x){
                 var tilex = x * (tile.width);
-                return tilex;
+                return tilex; //Convert Pixels to Tiles - Width
             }
         };
 
