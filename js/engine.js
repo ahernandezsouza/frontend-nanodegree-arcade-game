@@ -25,8 +25,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = c_width;
+    canvas.height = c_height;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -113,6 +113,12 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
+                'images/grass-block.png',    // Row 2 of 2 of grass
+                'images/water-block.png',   // Top row is water
+                'images/stone-block.png',   // Row 1 of 3 of stone
+                'images/stone-block.png',   // Row 2 of 3 of stone
+                'images/stone-block.png',   // Row 3 of 3 of stone
+                'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = (canvas.height-108)/tile.height, // 50 83 37
@@ -132,11 +138,15 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]),0,0, tile.width, tile.height/(83/170), col * tile.width, row * tile.height, tile.width, tile.height/(83/170));
+                ctx.drawImage(Resources.get(rowImages[row]) ,// IMG Element
+                                                            col * tile.width, row * tile.height, //Where to Place
+                                                            tile.width, tile.height * (170/83)); //Size to Scale
             }
         }
 
         renderEntities();
+        showMessage(MessageText);
+        showLives();
     }
 
     /* This function is called by the render function and is called on each game
@@ -173,7 +183,8 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/char-cat-girl.png'
+        'images/char-cat-girl.png',
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 

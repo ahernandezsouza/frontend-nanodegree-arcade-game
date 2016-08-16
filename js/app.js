@@ -1,6 +1,10 @@
 // Tile
-var tile = {"width" : 101,
-            "height" : 83,
+var MessageText ="",
+        c_width = 505,
+        c_height = 606;
+
+var tile = {"width" : c_width/5,//5
+            "height" : (c_height-108)/6,//6
             "y": function(y){
                 var tiley = tile.height + y * tile.height;
                 return tiley;
@@ -16,11 +20,22 @@ function tileRnd(x,y){
     return Math.floor((Math.random() * x) - y)
 }
 
-function showFillText() {
-    ctx.fillStyle = "#003300";
-    ctx.font = 'bolder 40px Arial san-serif';
+function showMessage(message) {
+    ctx.fillStyle = "#000";
+    ctx.font = 'bolder 40px Arial';
     ctx.textBaseline = 'bottom';
-    ctx.fillText('GAME OVER', 130, 606/2);
+    ctx.fillText(message, (c_width - ctx.measureText(message).width)/2, c_height/2);
+}
+
+//Lives
+function showLives() {
+    ctx.fillStyle = "#fff";
+    ctx.rect(0, 0, 200, 50);
+    ctx.fill();
+    ctx.fillStyle = "#000";
+    ctx.font = 'bolder 40px Arial';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText("LIVES: " + player.lives, 0, 50);
 }
 
 // Enemies our player must avoid
@@ -48,7 +63,7 @@ Enemy.prototype.update = function() {
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83));
 };
 
 // Now write your own player class
@@ -59,13 +74,20 @@ var Player = function(dt, x, y) {
     this.x = tile.x(x);
     this.y = tile.y(y)-10;
     this.sprite = 'images/char-cat-girl.png';
+    this.lives = 3;
 }
 
 Player.prototype.update = function(dt) {
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83));
+    for (var i = player.lives ; i > 0; i-=1){
+        ctx.drawImage(Resources.get('images/Heart.png'),
+            tile.x(3-i+2) + (tile.width * .25), 0 - tile.height * (170/83) * .1,
+            tile.width * .5, tile.height * (170/83) * .5//Where to Place
+        );
+    }
 };
 
 Player.prototype.handleInput = function(keypressed) {
@@ -90,10 +112,10 @@ Player.prototype.handleInput = function(keypressed) {
             RestartGame();
             break;
         case "a":
-            tile.width-=1;
+            //tile.height-=1;
             break;
         case "z":
-            tile.width+=1;
+            //tile.height+=1;
             break;
     }
 };
@@ -143,7 +165,11 @@ function checkCollisions(){
     var playerY = Math.round(player.y/tile.height);
     if ((enemyY === playerY) && (enemyX === playerX)){
         //console.log("CRASH!!!");
-        StopGame();
+        player.lives-= 1;
+        ResetGame();
+        if (player.lives===0){
+            StopGame();
+        }
     }
     });
 }
@@ -153,16 +179,22 @@ function StopGame(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
     });
+    MessageText = "GAME OVER!";
 }
 
-
-//Restart Game
-function RestartGame(){
+//Reset Game
+function ResetGame(){
     allEnemies.forEach(function(enemy) {
         enemy.x = tile.x(tileRnd(5, 5));
-        enemy.speed = 5;
+        enemy.speed = 3;
     });
     player.x = tile.x(0);
     player.y = tile.y(4)-10;
+}
 
+//Restart Game
+function RestartGame(){
+    ResetGame();
+    player.lives = 3;
+    MessageText = "";
 }
