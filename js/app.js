@@ -4,6 +4,7 @@ var score = 0,
     c_height = 606, //Canvas Height
     t_width = 6, //Width in Tiles
     t_height = 7,//Height in Tiles
+    d_lives = 5,//Default Lives
     messageLines = [""],//Message for Message Zone
     tile = {"width" : c_width/t_width,// Tile Width in Pixels
             "height" : (c_height-108)/t_height,// Tile Height in Pixels (Game Area)
@@ -60,7 +61,7 @@ var Player = function(dt, x, y) {
     this.y = tile.y(y)-10;
     this.speed = 1;
     this.sprite = 'images/char-cat-girl.png';
-    this.lives = 3;
+    this.lives = d_lives;
 }
 
 Player.prototype.update = function(dt) {
@@ -190,8 +191,8 @@ function ResetGame(){
 //Restart Game
 function RestartGame(){
     ResetGame();
-    player.lives = 3;
     messageLines = [""];
+    player.lives = d_lives;
 }
 
 //Random integer number between x and y
