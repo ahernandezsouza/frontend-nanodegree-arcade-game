@@ -103,6 +103,18 @@ Player.prototype.handleInput = function(keypressed) {
 
 ////////////////////////////////////////////////////////////////////////
 
+var Gem = function(x, y) {
+    this.x = tile.x(x);
+    this.y = tile.y(y)+10;
+    this.sprite = 'images/Gem-Orange.png';
+}
+
+Gem.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83) * .73);
+};
+
+
+////////////////////////////////////////////////////////////////////////
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -128,6 +140,14 @@ var allEnemies = [
 
 var player = new Player(1, 0, t_height-2);
 
+var gem1 = new Gem(1, -1);
+var gem2 = new Gem(t_width-2, -1);
+
+var allGems = [
+    gem1,
+    gem2
+];
+
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -140,7 +160,6 @@ document.addEventListener('keyup', function(e) {
         65: 'a',
         90: 'z'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
@@ -165,9 +184,6 @@ function checkCollisions(){
 
 //Set Gems (Appear and Disappear)
 
-function SetGem(){
-    var delayGem = Date.now();
-}
 
 //Stop Game
 function StopGame(){
@@ -176,6 +192,15 @@ function StopGame(){
         player.speed = 0;
     });
     messageLines = ["GAME OVER!","Press Spacebar to Continue"];
+}
+
+//Won Game
+function WonGame(){
+    allEnemies.forEach(function(enemy) {
+        enemy.speed = 0;
+        player.speed = 0;
+    });
+    messageLines = ["YOU WON!","Press Spacebar to Continue"];
 }
 
 //Reset Game
