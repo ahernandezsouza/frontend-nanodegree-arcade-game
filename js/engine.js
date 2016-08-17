@@ -64,6 +64,7 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
+        //selectGame();
         reset();
         lastTime = Date.now();
         main();

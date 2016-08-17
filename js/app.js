@@ -2,12 +2,12 @@
 var score = 0,
     c_width = 505, //Canvas Width
     c_height = 606, //Canvas Height
-    t_width = 6, //Width in Tiles
-    t_height = 7,//Height in Tiles
+    t_width = [5, 6], //Width in Tiles
+    t_height = [6, 7],//Height in Tiles
     d_lives = 5,//Default Lives
     messageLines = [""],//Message for Message Zone
-    tile = {"width" : c_width/t_width,// Tile Width in Pixels
-            "height" : (c_height-108)/t_height,// Tile Height in Pixels (Game Area)
+    tile = {"width" : c_width/t_width[1],// Tile Width in Pixels
+            "height" : (c_height-108)/t_height[1],// Tile Height in Pixels (Game Area)
             "y": function(y){
                 var tiley = tile.height + y * tile.height;
                 return tiley; //Convert Pixels to Tiles - Height
@@ -43,7 +43,7 @@ Enemy.prototype.update = function() {
     // all computers.
     this.x+= this.speed*this.dt;
 
-    if (this.x > tile.x(t_width)){this.x = -tile.x(1)}
+    if (this.x > tile.x(t_width[1])){this.x = -tile.x(1)}
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -83,14 +83,14 @@ Player.prototype.handleInput = function(keypressed) {
             break;
         case "right":
             this.x+= tile.width*player.speed;//'right'
-            if (this.x > tile.x(t_width)){this.x-= tile.width}
+            if (this.x > tile.x(t_width[1])){this.x-= tile.width}
             break;
         case "down":
             this.y+= tile.height*player.speed;//'down'
-            if (this.y > tile.y(t_height-2)){this.y-= tile.height}
+            if (this.y > tile.y(t_height[1]-2)){this.y-= tile.height}
             break;
         case "space":
-            RestartGame();
+            restartGame();
             break;
         case "a":
             //tile.height-=1;
@@ -121,12 +121,12 @@ Gem.prototype.render = function() {
 
 
 var enemy1 = new Enemy(1, Rnd(0,3), 0);
-var enemy2 = new Enemy(1, Rnd(0,t_width), 1);
-var enemy3 = new Enemy(1, Rnd(0,t_width), 2);
+var enemy2 = new Enemy(1, Rnd(0,t_width[1]), 1);
+var enemy3 = new Enemy(1, Rnd(0,t_width[1]), 2);
 var enemy4 = new Enemy(1, Rnd(0,2), 3);
 
-var enemy5 = new Enemy(1, Rnd(4,t_width), 0);
-var enemy6 = new Enemy(1, Rnd(3,t_width), 3);
+var enemy5 = new Enemy(1, Rnd(4,t_width[1]), 0);
+var enemy6 = new Enemy(1, Rnd(3,t_width[1]), 3);
 
 
 var allEnemies = [
@@ -138,10 +138,10 @@ var allEnemies = [
     enemy6
 ];
 
-var player = new Player(1, 0, t_height-2);
+var player = new Player(1, 0, t_height[1]-2);
 
 var gem1 = new Gem(1, -1);
-var gem2 = new Gem(t_width-2, -1);
+var gem2 = new Gem(t_width[1]-2, -1);
 
 var allGems = [
     gem1,
@@ -174,23 +174,25 @@ function checkCollisions(){
         if ((enemyY === playerY) && (enemyX === playerX)){
             //console.log("CRASH!!!");
             player.lives-= 1;
-            ResetGame();
+            resetGame();
         }
     });
     allGems.forEach(function(gem) {
         var gemX = Math.round(gem.x/tile.width);
         var gemY = Math.round(gem.y/tile.height);
         if ((gemY === playerY) && (gemX === playerX)){
-            ResetGame();
-            WonGame();
+            player.lives+= 1;
+            resetGame();
+            wonGame();
         }
         else if ((gemY === playerY) && !(gemX === playerX)){
             player.lives-= 1;
-            ResetGame();
+            resetGame();
+            stopGame();
         }
 
         if (player.lives===0){
-            StopGame();
+            stopGame();
         }
     });
 }
@@ -199,7 +201,7 @@ function checkCollisions(){
 
 
 //Stop Game
-function StopGame(){
+function stopGame(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
         player.speed = 0;
@@ -208,7 +210,7 @@ function StopGame(){
 }
 
 //Won Game
-function WonGame(){
+function wonGame(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
         player.speed = 0;
@@ -216,19 +218,28 @@ function WonGame(){
     messageLines = ["YOU WON!","Press Spacebar to Play Again"];
 }
 
+//Won Game
+function selectGame(){
+    allEnemies.forEach(function(enemy) {
+        enemy.speed = 0;
+        player.speed = 0;
+    });
+    messageLines = ["Select Difficulty Level", "E - Easy Level", "H - Hard Level"];
+}
+
 //Reset Game
-function ResetGame(){
+function resetGame(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = Rnd(3,6);
     });
     player.x = tile.x(0);
-    player.y = tile.y(t_height-2)-10;
+    player.y = tile.y(t_height[1]-2)-10;
     player.speed = 1;
 }
 
 //Restart Game
-function RestartGame(){
-    ResetGame();
+function restartGame(){
+    resetGame();
     messageLines = [""];
     player.lives = d_lives;
 }
