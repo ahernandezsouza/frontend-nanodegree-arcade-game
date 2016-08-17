@@ -166,19 +166,32 @@ document.addEventListener('keyup', function(e) {
 //Collision Detection
 
 function checkCollisions(){
-    allEnemies.forEach(function(enemy) {
-    var enemyX = Math.round(enemy.x/tile.width);
-    var enemyY = Math.round(enemy.y/tile.height);
     var playerX = Math.round(player.x/tile.width);
     var playerY = Math.round(player.y/tile.height);
-    if ((enemyY === playerY) && (enemyX === playerX)){
-        //console.log("CRASH!!!");
-        player.lives-= 1;
-        ResetGame();
+    allEnemies.forEach(function(enemy) {
+        var enemyX = Math.round(enemy.x/tile.width);
+        var enemyY = Math.round(enemy.y/tile.height);
+        if ((enemyY === playerY) && (enemyX === playerX)){
+            //console.log("CRASH!!!");
+            player.lives-= 1;
+            ResetGame();
+        }
+    });
+    allGems.forEach(function(gem) {
+        var gemX = Math.round(gem.x/tile.width);
+        var gemY = Math.round(gem.y/tile.height);
+        if ((gemY === playerY) && (gemX === playerX)){
+            ResetGame();
+            WonGame();
+        }
+        else if ((gemY === playerY) && !(gemX === playerX)){
+            player.lives-= 1;
+            ResetGame();
+        }
+
         if (player.lives===0){
             StopGame();
         }
-    }
     });
 }
 
@@ -200,7 +213,7 @@ function WonGame(){
         enemy.speed = 0;
         player.speed = 0;
     });
-    messageLines = ["YOU WON!","Press Spacebar to Continue"];
+    messageLines = ["YOU WON!","Press Spacebar to Play Again"];
 }
 
 //Reset Game
