@@ -7,14 +7,14 @@ var score = 0,
     t_height = [6, 7],//Height in Tiles
     d_lives = 5,//Default Lives
     messageLines = [""],//Message for Message Zone
-    tile = {"width" : c_width/t_width[difficulty],// Tile Width in Pixels
-            "height" : (c_height-108)/t_height[difficulty],// Tile Height in Pixels (Game Area)
+    tile = {"width" : function(){return c_width/t_width[difficulty]},// Tile Width in Pixels
+            "height" : function(){return (c_height-108)/t_height[difficulty]},// Tile Height in Pixels (Game Area)
             "y": function(y){
-                var tiley = tile.height + y * tile.height;
+                var tiley = tile.height() + y * tile.height();
                 return tiley; //Convert Pixels to Tiles - Height
             },
             "x": function(x){
-                var tilex = x * (tile.width);
+                var tilex = x * tile.width();
                 return tilex; //Convert Pixels to Tiles - Width
             }
         };
@@ -48,7 +48,7 @@ Enemy.prototype.update = function() {
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83));
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (170/83));
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -69,26 +69,26 @@ Player.prototype.update = function(dt) {
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83));
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (170/83));
 };
 
 Player.prototype.handleInput = function(keypressed) {
     switch (keypressed){
         case "left":
-            this.x-= tile.width*player.speed;//'left'
-            if (this.x <= -tile.width){this.x+= tile.width}
+            this.x-= tile.width()*player.speed;//'left'
+            if (this.x <= -tile.width()){this.x+= tile.width()}
             break;
         case "up":
-            this.y-= tile.height*player.speed;//'up'
-            if (this.y <= -tile.height){this.y+= tile.height}
+            this.y-= tile.height()*player.speed;//'up'
+            if (this.y <= -tile.height()){this.y+= tile.height()}
             break;
         case "right":
-            this.x+= tile.width*player.speed;//'right'
-            if (this.x > tile.x(t_width[difficulty])){this.x-= tile.width}
+            this.x+= tile.width()*player.speed;//'right'
+            if (this.x > tile.x(t_width[difficulty])){this.x-= tile.width()}
             break;
         case "down":
-            this.y+= tile.height*player.speed;//'down'
-            if (this.y > tile.y(t_height[difficulty]-2)){this.y-= tile.height}
+            this.y+= tile.height()*player.speed;//'down'
+            if (this.y > tile.y(t_height[difficulty]-2)){this.y-= tile.height()}
             break;
         case "space":
             restartGame();
@@ -113,7 +113,7 @@ var Gem = function(x, y) {
 }
 
 Gem.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width, tile.height * (170/83) * .73);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (170/83) * .73);
 };
 
 
@@ -169,11 +169,11 @@ document.addEventListener('keyup', function(e) {
 //Collision Detection
 
 function checkCollisions(){
-    var playerX = Math.round(player.x/tile.width);
-    var playerY = Math.round(player.y/tile.height);
+    var playerX = Math.round(player.x/tile.width());
+    var playerY = Math.round(player.y/tile.height());
     allEnemies.forEach(function(enemy) {
-        var enemyX = Math.round(enemy.x/tile.width);
-        var enemyY = Math.round(enemy.y/tile.height);
+        var enemyX = Math.round(enemy.x/tile.width());
+        var enemyY = Math.round(enemy.y/tile.height());
         if ((enemyY === playerY) && (enemyX === playerX)){
             //console.log("CRASH!!!");
             player.lives-= 1;
@@ -181,8 +181,8 @@ function checkCollisions(){
         }
     });
     allGems.forEach(function(gem) {
-        var gemX = Math.round(gem.x/tile.width);
-        var gemY = Math.round(gem.y/tile.height);
+        var gemX = Math.round(gem.x/tile.width());
+        var gemY = Math.round(gem.y/tile.height());
         if ((gemY === playerY) && (gemX === playerX)){
             player.lives+= 1;
             resetGame();
@@ -264,16 +264,16 @@ function showMessage() {
 //Lives
 function showLives() {
     ctx.fillStyle = "#fff";
-    ctx.rect(0, 0, 400, tile.height * .58);
+    ctx.rect(0, 0, 400, tile.height() * .58);
     ctx.fill();
     ctx.fillStyle = "#000";
-    ctx.font = 'bolder ' + tile.height * .5 +'px Arial';
+    ctx.font = 'bolder ' + tile.height() * .5 +'px Arial';
     ctx.textBaseline = 'bottom';
     ctx.fillText("LIVES: ", 0, 50);
     for (var i = player.lives ; i > 0; i-=1){
         ctx.drawImage(Resources.get('images/Heart.png'),
-            75 + tile.x(i)*.5, 0 - tile.height * (170/83) * .1,
-            tile.width * .5, tile.height * (170/83) * .5//Where to Place
+            75 + tile.x(i)*.5, 0 - tile.height() * (170/83) * .1,
+            tile.width() * .5, tile.height() * (170/83) * .5//Where to Place
         );
     }
 }

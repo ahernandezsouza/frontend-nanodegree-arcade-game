@@ -123,8 +123,8 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = (canvas.height-108)/tile.height, // 50 83 37
-            numCols = canvas.width/tile.width,
+            numRows = (canvas.height-108)/tile.height(), // 50 83 37
+            numCols = canvas.width/tile.width(),
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -141,8 +141,8 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
                 ctx.drawImage(Resources.get(rowImages[row]) ,// IMG Element
-                                                            col * tile.width, row * tile.height, //Where to Place
-                                                            tile.width, tile.height * (170/83)); //Size to Scale
+                                                            col * tile.width(), row * tile.height(), //Where to Place
+                                                            tile.width(), tile.height() * (170/83)); //Size to Scale
             }
         }
 
