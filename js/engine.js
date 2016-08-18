@@ -64,7 +64,7 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        selectGame();
+        modal("selectGame");
         reset();
         lastTime = Date.now();
         main();

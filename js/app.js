@@ -6,7 +6,13 @@ var score = 0,
     t_width = [5, 6], //Width in Tiles
     t_height = [6, 7],//Height in Tiles
     d_lives = 5,//Default Lives
-    messageLines = [""],//Message for Message Zone
+    showLines = [],
+    messageLines = {
+    "blank": [""],
+    "stopGame": ["GAME OVER!","Press Spacebar to Continue"],
+    "wonGame": ["YOU WON!","Press Spacebar to Play Again"],
+    "selectGame": ["Select Difficulty", "E - Easy Level", "H - Hard Level"]
+    },//Message for Message Zone
     tile = {"width" : function(){return c_width/t_width[difficulty]},// Tile Width in Pixels
             "height" : function(){return (c_height-108)/t_height[difficulty]},// Tile Height in Pixels (Game Area)
             "y": function(y){
@@ -186,47 +192,60 @@ function checkCollisions(){
         if ((gemY === playerY) && (gemX === playerX)){
             player.lives+= 1;
             resetGame();
-            wonGame();
+            modal("wonGame");
         }
         else if ((gemY === playerY) && !(gemX === playerX)){
             player.lives-= 1;
             resetGame();
-            stopGame();
+            modal("stopGame");
         }
 
         if (player.lives===0){
-            stopGame();
+            modal("stopGame");
         }
     });
 }
 
-//Set Gems (Appear and Disappear)
+//TODO Set Gems (Appear and Disappear)
 
+//Show a Message in the middle of the screen
+function modal(message){
+    stopEntities();
+    showLines = messageLines[message];
+    }
+
+function showMessage() {
+    ctx.shadowOffsetX = 10;
+    ctx.shadowOffsetY = 10;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#4D4D4D";
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(25, 200, c_width-50, c_height-350);
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "none";
+    ctx.fillStyle = "#000";
+    ctx.font = 'bolder 30px Arial';
+    ctx.textBaseline = 'bottom';
+    for (var i = 0 ; i < showLines.length; ++i){
+        ctx.fillText(showLines[i], (
+            c_width - ctx.measureText(showLines[i]).width)/2,
+            (c_height/2) + i*40
+            );
+    };
+
+}
 
 //Stop Game
-function stopEnemies(){
+function stopEntities(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
         player.speed = 0;
     });
 }
 
-function stopGame(){
-    stopEnemies();
-    messageLines = ["GAME OVER!","Press Spacebar to Continue"];
-}
-
-//Won Game
-function wonGame(){
-    stopEnemies();
-    messageLines = ["YOU WON!","Press Spacebar to Play Again"];
-}
-
-//Won Game
-function selectGame(){
-    stopEnemies();
-    messageLines = ["Select Difficulty", "E - Easy Level", "H - Hard Level"];
-}
+//Show Modal
 
 //Reset Game
 function resetGame(){
@@ -241,24 +260,13 @@ function resetGame(){
 //Restart Game
 function restartGame(){
     resetGame();
-    messageLines = [""];
+    showLines = messageLines["blank"];
     player.lives = d_lives;
 }
 
 //Random integer number between x and y
 function Rnd(x,y){
     return Math.floor((Math.random() * (y-x))) + x
-}
-
-//Show a Message in the middle of the screen
-
-function showMessage() {
-    ctx.fillStyle = "#000";
-    ctx.font = 'bolder 30px Arial';
-    ctx.textBaseline = 'bottom';
-    for (var i = 0 ; i < messageLines.length; ++i){
-        ctx.fillText(messageLines[i], (c_width - ctx.measureText(messageLines[i]).width)/2, (c_height/2) + i*40);
-    };
 }
 
 //Lives
