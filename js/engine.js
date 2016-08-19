@@ -64,7 +64,7 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        modal("selectGame");
+        modal("selectGame",1);
         reset();
         lastTime = Date.now();
         main();
@@ -80,6 +80,7 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        clearScreen();
         updateEntities(dt);
         checkCollisions();
     }
@@ -109,19 +110,23 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
+            [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png',    // Row 2 of 2 of grass
+                'images/grass-block.png'],   // Row 2 of 2 of grass
+            [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
+                'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/grass-block.png',   // Row 1 of 2 of grass
+                'images/grass-block.png']    // Row 2 of 2 of grass
             ],
             numRows = (canvas.height-108)/tile.height(), // 50 83 37
             numCols = canvas.width/tile.width(),
@@ -140,7 +145,7 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]) ,// IMG Element
+                ctx.drawImage(Resources.get(rowImages[difficulty][row]) ,// IMG Element
                                                             col * tile.width(), row * tile.height(), //Where to Place
                                                             tile.width(), tile.height() * (170/83)); //Size to Scale
             }
@@ -148,6 +153,7 @@ var Engine = (function(global) {
 
         renderEntities();
         showMessage();
+        showScore();
         showLives();
     }
 
@@ -175,7 +181,6 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        //showStrokeFillText();
         // noop
     }
 

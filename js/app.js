@@ -1,27 +1,29 @@
 /* VARIABLES */
 var score = 0,
-    difficulty = 1,
+    difficulty = 0,
     c_width = 505, //Canvas Width
     c_height = 606, //Canvas Height
-    t_width = [5, 6], //Width in Tiles
-    t_height = [6, 7],//Height in Tiles
-    d_lives = 5,//Default Lives
+    t_width = [6, 7], //Width in Tiles
+    t_height = [7, 8],//Height in Tiles
+    d_lives = 3,//Default Lives
+    score = 0,
     showLines = [],
+    allEnemies = [],
+    allGems = [],
     messageLines = {
     "blank": [""],
     "stopGame": ["GAME OVER!","Press Spacebar to Continue"],
     "wonGame": ["YOU WON!","Press Spacebar to Play Again"],
     "selectGame": ["Select Difficulty", "E - Easy Level", "H - Hard Level"]
-    },//Message for Message Zone
+    },
+    colorLines = "none",//Message for Message Zone
     tile = {"width" : function(){return c_width/t_width[difficulty]},// Tile Width in Pixels
-            "height" : function(){return (c_height-108)/t_height[difficulty]},// Tile Height in Pixels (Game Area)
+            "height" : function(){return c_height/t_height[difficulty]},// Tile Height in Pixels (Game Area)
             "y": function(y){
-                var tiley = tile.height() + y * tile.height();
-                return tiley; //Convert Pixels to Tiles - Height
+                return tile.height() + (y * tile.height()); //Convert Pixels to Tiles - Height
             },
             "x": function(x){
-                var tilex = x * tile.width();
-                return tilex; //Convert Pixels to Tiles - Width
+                return x * tile.width(); //Convert Pixels to Tiles - Width
             }
         };
 
@@ -35,7 +37,7 @@ var Enemy = function(dt, x, y) {
     // we've provided one for you to get started
     this.dt = dt;
     this.x = tile.x(x);
-    this.y = tile.y(y)-20;
+    this.y = tile.y(y);
     this.speed = Rnd(3,6);
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -54,7 +56,9 @@ Enemy.prototype.update = function() {
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (170/83));
+    ctx.fillStyle = "#fff";
+    //ctx.fillRect(this.x, this.y, tile.width(), tile.height() * (170/83));
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y - (tile.height()/(tile.height()/170))*.15/*- (tile.height() * (40/171))*/, tile.width(), tile.height()/(tile.height()/170)/* * (170/83)*/);
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -75,7 +79,7 @@ Player.prototype.update = function(dt) {
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (170/83));
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), (tile.height()/(tile.height()/170)));
 };
 
 Player.prototype.handleInput = function(keypressed) {
@@ -94,21 +98,22 @@ Player.prototype.handleInput = function(keypressed) {
             break;
         case "down":
             this.y+= tile.height()*player.speed;//'down'
-            if (this.y > tile.y(t_height[difficulty]-2)){this.y-= tile.height()}
+            if (this.y > tile.y(t_height[difficulty]-3)){this.y-= tile.height()}
             break;
         case "space":
             restartGame();
             break;
         case "e":
             difficulty = 0;
-            restartGame()
+            startGame()
             break;
         case "h":
             difficulty = 1;
-            restartGame()
+            startGame()
             break;
     }
 };
+
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -119,7 +124,7 @@ var Gem = function(x, y) {
 }
 
 Gem.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (170/83) * .73);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (171/tile.height()) * .73);
 };
 
 
@@ -129,16 +134,16 @@ Gem.prototype.render = function() {
 // Place the player object in a variable called player
 
 
+function instantiateEntities(){
+
 var enemy1 = new Enemy(1, Rnd(0,3), 0);
 var enemy2 = new Enemy(1, Rnd(0,t_width[difficulty]), 1);
 var enemy3 = new Enemy(1, Rnd(0,t_width[difficulty]), 2);
 var enemy4 = new Enemy(1, Rnd(0,2), 3);
-
 var enemy5 = new Enemy(1, Rnd(4,t_width[difficulty]), 0);
 var enemy6 = new Enemy(1, Rnd(3,t_width[difficulty]), 3);
 
-
-var allEnemies = [
+allEnemies = [
     enemy1,
     enemy2,
     enemy3,
@@ -147,15 +152,17 @@ var allEnemies = [
     enemy6
 ];
 
-var player = new Player(1, 0, t_height[difficulty]-2);
-
 var gem1 = new Gem(1, -1);
 var gem2 = new Gem(t_width[difficulty]-2, -1);
 
-var allGems = [
+allGems = [
     gem1,
     gem2
 ];
+
+}
+
+var player = new Player(1, 0, t_height[difficulty]-3);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -190,37 +197,44 @@ function checkCollisions(){
         var gemX = Math.round(gem.x/tile.width());
         var gemY = Math.round(gem.y/tile.height());
         if ((gemY === playerY) && (gemX === playerX)){
-            player.lives+= 1;
+            if (player.lives<3){player.lives+= 1}
+            score += 50;
             resetGame();
-            modal("wonGame");
+//            modal("wonGame",1);
         }
-        else if ((gemY === playerY) && !(gemX === playerX)){
-            player.lives-= 1;
+        if ((gemY === playerY) && !(gemX === playerX)){
             resetGame();
-            modal("stopGame");
         }
 
         if (player.lives===0){
-            modal("stopGame");
+            modal("stopGame",1);
         }
     });
 }
 
 //TODO Set Gems (Appear and Disappear)
 
-//Show a Message in the middle of the screen
-function modal(message){
-    stopEntities();
+//Show Modal
+function modal(message,active){
     showLines = messageLines[message];
+    colorLines = active;
+    if (allEnemies.length !== 0){stopEntities()};
     }
 
+//Clear Screem
+function clearScreen() {
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, c_width, c_height);
+}
+
+//Show a Message in the middle of the screen
 function showMessage() {
     ctx.shadowOffsetX = 10;
     ctx.shadowOffsetY = 10;
     ctx.shadowBlur = 10;
     ctx.shadowColor = "#4D4D4D";
     ctx.fillStyle = "#fff";
-    ctx.fillRect(25, 200, c_width-50, c_height-350);
+    ctx.fillRect(25, 200, (c_width-50)*colorLines, (c_height-350)*colorLines);
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     ctx.shadowBlur = 0;
@@ -234,7 +248,6 @@ function showMessage() {
             (c_height/2) + i*40
             );
     };
-
 }
 
 //Stop Game
@@ -245,7 +258,6 @@ function stopEntities(){
     });
 }
 
-//Show Modal
 
 //Reset Game
 function resetGame(){
@@ -253,7 +265,7 @@ function resetGame(){
         enemy.speed = Rnd(3,6);
     });
     player.x = tile.x(0);
-    player.y = tile.y(t_height[difficulty]-2)-10;
+    player.y = tile.y(t_height[difficulty]-3)-10;
     player.speed = 1;
 }
 
@@ -261,6 +273,16 @@ function resetGame(){
 function restartGame(){
     resetGame();
     showLines = messageLines["blank"];
+    colorLines = 0;
+    player.lives = d_lives;
+}
+
+//Start Game
+function startGame(){
+    instantiateEntities();
+    resetGame();
+    showLines = messageLines["blank"];
+    colorLines = 0;
     player.lives = d_lives;
 }
 
@@ -271,17 +293,24 @@ function Rnd(x,y){
 
 //Lives
 function showLives() {
-    ctx.fillStyle = "#fff";
-    ctx.rect(0, 0, 400, tile.height() * .58);
-    ctx.fill();
     ctx.fillStyle = "#000";
-    ctx.font = 'bolder ' + tile.height() * .5 +'px Arial';
+    ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * .20 +'px Arial';
     ctx.textBaseline = 'bottom';
     ctx.fillText("LIVES: ", 0, 50);
     for (var i = player.lives ; i > 0; i-=1){
         ctx.drawImage(Resources.get('images/Heart.png'),
-            75 + tile.x(i)*.5, 0 - tile.height() * (170/83) * .1,
-            tile.width() * .5, tile.height() * (170/83) * .5//Where to Place
+            75 + tile.x(i)*.5, 0 -  tile.height()/(tile.height()/170) * .1,
+            tile.width() * .5, tile.height()/(tile.height()/170) * .45//Where to Place
         );
     }
+    ctx.fillStyle = "none";
+}
+
+//Lives
+function showScore() {
+    ctx.fillStyle = "#000";
+    ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * .20 +'px Arial';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText("SCORE: "+score, c_width/2, 50);
+    ctx.fillStyle = "#fff";
 }
