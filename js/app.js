@@ -200,10 +200,10 @@ function checkCollisions(){
         var gemX = Math.round(gem.x/tile.width());
         var gemY = Math.round(gem.y/tile.height());
         if ((gemY === playerY) && (gemX === playerX)){ //Collision between Gems
-            if (player.lives<3){player.lives+= 1;}
-            score += 50;
-            if (score === 350) {modal("wonGame",1)};
-            resetGame();
+            if (player.lives<3){player.lives+= 1;} // You touch a gem you get an additional life
+            score += 50;// Add points
+            if (score === 350) {modal("wonGame",1)};  //You get to 350, you win the game
+            resetGame(); //want to play again?
         }
         if ((gemY === playerY) && (gemX !== playerX)){
             resetGame(); // Touch water restart run for gems
@@ -211,20 +211,20 @@ function checkCollisions(){
     });
 
     if (player.lives===0){
-        modal("stopGame",1); //
+        modal("stopGame",1); // No lives you are out of luck
     }
 }
 
 //Show Modal
 function modal(message,active){
-    textLines = messageLines[message];
-    showLines = active;
-    if (allEnemies.length !== 0){stopEntities();}
+    textLines = messageLines[message]; //set text to show
+    showLines = active; //turn on modal
+    if (allEnemies.length !== 0){stopEntities();} // stop everything to show the message
     }
 
-//Clear Screem
+//Clear Screen
 function clearScreen() {
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "#fff"; // clear screen on each rendering, so we don't leave trash behind
     ctx.fillRect(0, 0, c_width, c_height);
 }
 
@@ -235,18 +235,18 @@ function showMessage() {
     ctx.shadowBlur = 10;
     ctx.shadowColor = "#4D4D4D";
     ctx.fillStyle = "#fff";
-    ctx.fillRect(25, 200, (c_width-50)*showLines, (c_height-350)*showLines);
+    ctx.fillRect(25, 200, (c_width-50)*showLines, (c_height-350)*showLines); //Define Modal rectangle with shadow
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     ctx.shadowBlur = 0;
-    ctx.shadowColor = "none";
+    ctx.shadowColor = "none";//erease definition so it doesn't break anything
     ctx.fillStyle = "#000";
     ctx.font = 'bolder 30px Arial';
-    ctx.textBaseline = 'bottom';
+    ctx.textBaseline = 'bottom'; // Definition for the text
     for (var i = 0 ; i < textLines.length; ++i){
-        ctx.fillText(textLines[i], (
-            c_width - ctx.measureText(textLines[i]).width)/2,
-            (c_height/2) + i*40
+        ctx.fillText(textLines[i], ( //draw message text
+            c_width - ctx.measureText(textLines[i]).width)/2, // set line by line
+            (c_height/2) + i*40 //
             );
     }
 }
@@ -256,7 +256,7 @@ function stopEntities(){
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
         player.speed = 0;
-    });
+    }); //Stop Entity movement
 }
 
 
@@ -267,7 +267,7 @@ function resetGame(){
     });
     player.x = tile.x(0);
     player.y = tile.y(t_height[difficulty]-3)-10;
-    player.speed = 1;
+    player.speed = 1; // Reset Position each time the player dies
 }
 
 //Restart Game
@@ -276,7 +276,7 @@ function restartGame(){
     textLines = messageLines.blank;
     showLines = 0;
     player.lives = d_lives;
-    score = 0;
+    score = 0; // Setup for new game
 }
 
 //Start Game
@@ -285,7 +285,7 @@ function startGame(){
     resetGame();
     textLines = messageLines.blank;
     showLines = 0;
-    player.lives = d_lives;
+    player.lives = d_lives; // Start Game, first run
 }
 
 //Random integer number between x and y
@@ -294,12 +294,12 @@ function Rnd(x,y){
 }
 
 //Lives
-function showLives() {
+function showLives() { //Display Lives
     ctx.fillStyle = "#000";
     ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * 0.20 +'px Arial';
     ctx.textBaseline = 'bottom';
     ctx.fillText("LIVES: ", 0, 50);
-    for (var i = player.lives ; i > 0; i-=1){
+    for (var i = player.lives ; i > 0; i-=1){ //Display Hearts representing Lives
         ctx.drawImage(Resources.get('images/Heart.png'),
             75 + tile.x(i)*0.5, 0 -  tile.height()/(tile.height()/170) * 0.1,
             tile.width() * 0.5, tile.height()/(tile.height()/170) * 0.45//Where to Place
@@ -309,7 +309,7 @@ function showLives() {
 }
 
 //Score
-function showScore() {
+function showScore() { //Display Score
     ctx.fillStyle = "#000";
     ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * 0.20 +'px Arial';
     ctx.textBaseline = 'bottom';
