@@ -1,6 +1,21 @@
-frontend-nanodegree-arcade-game
-===============================
+# The Frog Princess
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+The Frog Princess is trying to recover her life-gems from the Beatles, her sworn enemies (since Frogs eat them). She has to recover all the gems without falling to the river and getting dragged to the beggining [here](http://ahernandez.github.io/frontend-nanodegree-arcade-game/)).
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+In the game you'll control our heroine, the Frog Princess!  
+![Steve](images/char-cat-girl.png)  
+Her name is **Sophie**.  You'll use the **arrow keys** to move Sophie around the map, trying to get the **gems**!  
+![Gem](images/Gem-Orange.png)
+
+Each one is worth **50 points**!
+
+You must avoid the...  
+![Enemy Bug](images/enemy-bug.png)  
+**...Beatle Soliders!**  
+
+The **water** won't kill you, but the river takes you back to the start (not fun).  
+![Water](images/water-block.png)  
+
+You can choose a bigger number of tiles for greater difficulty **(e for easy, h for hard)**. If you get to **350 points** you win the game!
+
+I hope you enjoy the game!!
