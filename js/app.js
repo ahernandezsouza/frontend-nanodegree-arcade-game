@@ -8,7 +8,7 @@ var score = 0,
     d_lives = 3,//Default Lives
     score = 0,// Points
     textLines = [], // Placeholder for Modal
-    allEnemies = [], // Placeholder for Enemy Objrcts
+    allEnemies = [], // Placeholder for Enemy Objects
     allGems = [], // Placeholder for Gems
     showLines = "none",//Message for Message Zone
     messageLines = {
@@ -20,7 +20,7 @@ var score = 0,
     tile = {"width" : function(){return c_width/t_width[difficulty];},// Tile Width in Pixels, divide canvas width by tile width (by difficulty)
             "height" : function(){return c_height/t_height[difficulty];},// Tile Height in Pixels (Game Area), divide canvas height by tile height (by difficulty)
             "y": function(y){
-                return tile.height() + (y * tile.height()); //Convert Pixels to Tiles - Height
+                return (1 + y) * tile.height(); //Convert Pixels to Tiles - Height
             },
             "x": function(x){
                 return x * tile.width(); //Convert Pixels to Tiles - Width
@@ -71,7 +71,7 @@ Player.prototype.update = function() {
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite),
-        this.x, this.y, tile.width(), (tile.height()/(tile.height()/170)));
+        this.x, this.y, tile.width(), (tile.height()/(tile.height()/170))); //adjust scale to difficulty
 };
 
 Player.prototype.handleInput = function(keypressed) {
@@ -93,14 +93,14 @@ Player.prototype.handleInput = function(keypressed) {
             if (this.y > tile.y(t_height[difficulty]-3)){this.y-= tile.height();}
             break;
         case "space":
-            restartGame();
+            restartGame(); // restart game
             break;
         case "e":
             difficulty = 0;
-            startGame();
+            startGame(); // set to easy
             break;
         case "h":
-            difficulty = 1;
+            difficulty = 1; // set to hard
             startGame();
             break;
     }
@@ -110,13 +110,15 @@ Player.prototype.handleInput = function(keypressed) {
 ////////////////////////////////////////////////////////////////////////
 
 var Gem = function(x, y) {
-    this.x = tile.x(x);
-    this.y = tile.y(y)+10;
-    this.sprite = 'images/Gem-Orange.png';
+    this.x = tile.x(x); // set x for Gem
+    this.y = tile.y(y)+10; // set y for Gem
+    this.sprite = 'images/Gem-Orange.png'; // set sprite for Gem
 };
 
 Gem.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (171/tile.height()) * 0.73);
+    ctx.drawImage(Resources.get(this.sprite),
+        this.x, this.y, //set gem position
+        tile.width(), tile.height() * (171/tile.height()) * 0.73); //scale gem to difficulty level
 };
 
 
@@ -135,6 +137,8 @@ var enemy4 = new Enemy(1, Rnd(0,2), 3);
 var enemy5 = new Enemy(1, Rnd(4,t_width[difficulty]), 0);
 var enemy6 = new Enemy(1, Rnd(3,t_width[difficulty]), 3);
 
+// Instantiate Enemy Objects
+
 allEnemies = [
     enemy1,
     enemy2,
@@ -144,17 +148,25 @@ allEnemies = [
     enemy6
 ];
 
+// Place enemies in Array
+
 var gem1 = new Gem(1, -1);
 var gem2 = new Gem(t_width[difficulty]-2, -1);
+
+// Instantiate Gems
 
 allGems = [
     gem1,
     gem2
 ];
 
+// Place gems in Array
+
 }
 
 var player = new Player(1, 0, t_height[difficulty]-3);
+
+// Instantiate Player
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -176,7 +188,7 @@ document.addEventListener('keyup', function(e) {
 function checkCollisions(){
     var playerX = Math.round(player.x/tile.width());
     var playerY = Math.round(player.y/tile.height());
-    allEnemies.forEach(function(enemy) {
+    allEnemies.forEach(function(enemy) { //Collision between Enemies
         var enemyX = Math.round(enemy.x/tile.width());
         var enemyY = Math.round(enemy.y/tile.height());
         if ((enemyY === playerY) && (enemyX === playerX)){
@@ -187,20 +199,20 @@ function checkCollisions(){
     allGems.forEach(function(gem) {
         var gemX = Math.round(gem.x/tile.width());
         var gemY = Math.round(gem.y/tile.height());
-        if ((gemY === playerY) && (gemX === playerX)){
+        if ((gemY === playerY) && (gemX === playerX)){ //Collision between Gems
             if (player.lives<3){player.lives+= 1;}
             score += 50;
+            if (score === 350) {modal("wonGame",1)};
             resetGame();
-//          modal("wonGame",1);
         }
         if ((gemY === playerY) && (gemX !== playerX)){
-            resetGame();
-        }
-
-        if (player.lives===0){
-            modal("stopGame",1);
+            resetGame(); // Touch water restart run for gems
         }
     });
+
+    if (player.lives===0){
+        modal("stopGame",1); //
+    }
 }
 
 //Show Modal
