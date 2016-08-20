@@ -1,6 +1,6 @@
 # The Frog Princess
 
-The Frog Princess is trying to recover her life-gems from the Beatles, her sworn enemies (since Frogs eat them). She has to recover all the gems without falling to the river and getting dragged to the beggining [here](http://ahernandezsouza.github.io/frontend-nanodegree-arcade-game/)).
+The Frog Princess is trying to recover her life-gems from the Beatles, her sworn enemies (since Frogs eat them). She has to recover all the gems without falling to the river and getting dragged to the beggining (you can play [here](http://ahernandezsouza.github.io/frontend-nanodegree-arcade-game/)).
 
 In the game you'll control our heroine, the Frog Princess!  
 ![Steve](images/char-cat-girl.png)  
