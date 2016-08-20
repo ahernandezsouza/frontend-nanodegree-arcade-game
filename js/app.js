@@ -6,19 +6,19 @@ var score = 0,
     t_width = [6, 7], //Width in Tiles
     t_height = [7, 8],//Height in Tiles
     d_lives = 3,//Default Lives
-    score = 0,
-    showLines = [],
-    allEnemies = [],
-    allGems = [],
+    score = 0,// Points
+    textLines = [], // Placeholder for Modal
+    allEnemies = [], // Placeholder for Enemy Objrcts
+    allGems = [], // Placeholder for Gems
+    showLines = "none",//Message for Message Zone
     messageLines = {
     "blank": [""],
     "stopGame": ["GAME OVER!","Press Spacebar to Continue"],
     "wonGame": ["YOU WON!","Press Spacebar to Play Again"],
-    "selectGame": ["Select Difficulty", "E - Easy Level", "H - Hard Level"]
+    "selectGame": ["Select Difficulty", "E - Easy Level", "H - Hard Level"] // Messages for Modal
     },
-    colorLines = "none",//Message for Message Zone
-    tile = {"width" : function(){return c_width/t_width[difficulty]},// Tile Width in Pixels
-            "height" : function(){return c_height/t_height[difficulty]},// Tile Height in Pixels (Game Area)
+    tile = {"width" : function(){return c_width/t_width[difficulty];},// Tile Width in Pixels, divide canvas width by tile width (by difficulty)
+            "height" : function(){return c_height/t_height[difficulty];},// Tile Height in Pixels (Game Area), divide canvas height by tile height (by difficulty)
             "y": function(y){
                 return tile.height() + (y * tile.height()); //Convert Pixels to Tiles - Height
             },
@@ -27,38 +27,30 @@ var score = 0,
             }
         };
 
-/* OBJECTS (Enemy and Player) */
+/* OBJECTS (Enemy, Player and Gem) */
 
 /////////////////////////////////////////////////////////////////////
 
 // Enemies our player must avoid
 var Enemy = function(dt, x, y) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
     this.dt = dt;
-    this.x = tile.x(x);
-    this.y = tile.y(y);
-    this.speed = Rnd(3,6);
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+    this.x = tile.x(x); //convert tile x # to pixels
+    this.y = tile.y(y); //convert tile y # to pixels
+    this.speed = Rnd(3,6); //set speed between 3 and 6 (random)
+    this.sprite = 'images/enemy-bug.png'; // select image for the sprite
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function() {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-    this.x+= this.speed*this.dt;
-
-    if (this.x > tile.x(t_width[difficulty])){this.x = -tile.x(1)}
+    this.x+= this.speed*this.dt; //regulates speed accordng to dt
+    if (this.x > tile.x(t_width[difficulty])){this.x = -tile.x(1);} //
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.fillStyle = "#fff";
-    //ctx.fillRect(this.x, this.y, tile.width(), tile.height() * (170/83));
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y - (tile.height()/(tile.height()/170))*.15/*- (tile.height() * (40/171))*/, tile.width(), tile.height()/(tile.height()/170)/* * (170/83)*/);
+    ctx.drawImage(Resources.get(this.sprite), // get Enemy sprite
+        this.x, this.y - (tile.height()/(tile.height()/170))*0.15, // set at x pixels, adjusting height by 15% to center in tile
+        tile.width(), tile.height()/(tile.height()/170) // scale at tile width and scale tile height by difficulty level
+    );
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -66,50 +58,50 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function(dt, x, y) {
-    this.dt = dt;
-    this.x = tile.x(x);
-    this.y = tile.y(y)-10;
-    this.speed = 1;
-    this.sprite = 'images/char-cat-girl.png';
-    this.lives = d_lives;
+var Player = function(x, y) {
+    this.x = tile.x(x); // set pixels by x tile
+    this.y = tile.y(y)-10; // set pixels by y tile
+    this.speed = 1; // set Player speed to control if the player moves or not
+    this.sprite = 'images/char-cat-girl.png'; //set Player image
+    this.lives = d_lives; // set initial default number of lives
 }
 
-Player.prototype.update = function(dt) {
+Player.prototype.update = function() {
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), (tile.height()/(tile.height()/170)));
+    ctx.drawImage(Resources.get(this.sprite),
+        this.x, this.y, tile.width(), (tile.height()/(tile.height()/170)));
 };
 
 Player.prototype.handleInput = function(keypressed) {
     switch (keypressed){
         case "left":
             this.x-= tile.width()*player.speed;//'left'
-            if (this.x <= -tile.width()){this.x+= tile.width()}
+            if (this.x <= -tile.width()){this.x+= tile.width();}
             break;
         case "up":
             this.y-= tile.height()*player.speed;//'up'
-            if (this.y <= -tile.height()){this.y+= tile.height()}
+            if (this.y <= -tile.height()){this.y+= tile.height();}
             break;
         case "right":
             this.x+= tile.width()*player.speed;//'right'
-            if (this.x > tile.x(t_width[difficulty])){this.x-= tile.width()}
+            if (this.x > tile.x(t_width[difficulty])){this.x-= tile.width();}
             break;
         case "down":
             this.y+= tile.height()*player.speed;//'down'
-            if (this.y > tile.y(t_height[difficulty]-3)){this.y-= tile.height()}
+            if (this.y > tile.y(t_height[difficulty]-3)){this.y-= tile.height();}
             break;
         case "space":
             restartGame();
             break;
         case "e":
             difficulty = 0;
-            startGame()
+            startGame();
             break;
         case "h":
             difficulty = 1;
-            startGame()
+            startGame();
             break;
     }
 };
@@ -121,10 +113,10 @@ var Gem = function(x, y) {
     this.x = tile.x(x);
     this.y = tile.y(y)+10;
     this.sprite = 'images/Gem-Orange.png';
-}
+};
 
 Gem.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (171/tile.height()) * .73);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, tile.width(), tile.height() * (171/tile.height()) * 0.73);
 };
 
 
@@ -188,8 +180,7 @@ function checkCollisions(){
         var enemyX = Math.round(enemy.x/tile.width());
         var enemyY = Math.round(enemy.y/tile.height());
         if ((enemyY === playerY) && (enemyX === playerX)){
-            //console.log("CRASH!!!");
-            player.lives-= 1;
+           player.lives-= 1;
             resetGame();
         }
     });
@@ -197,12 +188,12 @@ function checkCollisions(){
         var gemX = Math.round(gem.x/tile.width());
         var gemY = Math.round(gem.y/tile.height());
         if ((gemY === playerY) && (gemX === playerX)){
-            if (player.lives<3){player.lives+= 1}
+            if (player.lives<3){player.lives+= 1;}
             score += 50;
             resetGame();
 //          modal("wonGame",1);
         }
-        if ((gemY === playerY) && !(gemX === playerX)){
+        if ((gemY === playerY) && (gemX !== playerX)){
             resetGame();
         }
 
@@ -212,13 +203,11 @@ function checkCollisions(){
     });
 }
 
-//TODO Set Gems (Appear and Disappear)
-
 //Show Modal
 function modal(message,active){
-    showLines = messageLines[message];
-    colorLines = active;
-    if (allEnemies.length !== 0){stopEntities()};
+    textLines = messageLines[message];
+    showLines = active;
+    if (allEnemies.length !== 0){stopEntities();}
     }
 
 //Clear Screem
@@ -234,7 +223,7 @@ function showMessage() {
     ctx.shadowBlur = 10;
     ctx.shadowColor = "#4D4D4D";
     ctx.fillStyle = "#fff";
-    ctx.fillRect(25, 200, (c_width-50)*colorLines, (c_height-350)*colorLines);
+    ctx.fillRect(25, 200, (c_width-50)*showLines, (c_height-350)*showLines);
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     ctx.shadowBlur = 0;
@@ -242,12 +231,12 @@ function showMessage() {
     ctx.fillStyle = "#000";
     ctx.font = 'bolder 30px Arial';
     ctx.textBaseline = 'bottom';
-    for (var i = 0 ; i < showLines.length; ++i){
-        ctx.fillText(showLines[i], (
-            c_width - ctx.measureText(showLines[i]).width)/2,
+    for (var i = 0 ; i < textLines.length; ++i){
+        ctx.fillText(textLines[i], (
+            c_width - ctx.measureText(textLines[i]).width)/2,
             (c_height/2) + i*40
             );
-    };
+    }
 }
 
 //Stop Game
@@ -272,8 +261,8 @@ function resetGame(){
 //Restart Game
 function restartGame(){
     resetGame();
-    showLines = messageLines["blank"];
-    colorLines = 0;
+    textLines = messageLines.blank;
+    showLines = 0;
     player.lives = d_lives;
     score = 0;
 }
@@ -282,35 +271,35 @@ function restartGame(){
 function startGame(){
     instantiateEntities();
     resetGame();
-    showLines = messageLines["blank"];
-    colorLines = 0;
+    textLines = messageLines.blank;
+    showLines = 0;
     player.lives = d_lives;
 }
 
 //Random integer number between x and y
 function Rnd(x,y){
-    return Math.floor((Math.random() * (y-x))) + x
+    return Math.floor((Math.random() * (y-x))) + x;
 }
 
 //Lives
 function showLives() {
     ctx.fillStyle = "#000";
-    ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * .20 +'px Arial';
+    ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * 0.20 +'px Arial';
     ctx.textBaseline = 'bottom';
     ctx.fillText("LIVES: ", 0, 50);
     for (var i = player.lives ; i > 0; i-=1){
         ctx.drawImage(Resources.get('images/Heart.png'),
-            75 + tile.x(i)*.5, 0 -  tile.height()/(tile.height()/170) * .1,
-            tile.width() * .5, tile.height()/(tile.height()/170) * .45//Where to Place
+            75 + tile.x(i)*0.5, 0 -  tile.height()/(tile.height()/170) * 0.1,
+            tile.width() * 0.5, tile.height()/(tile.height()/170) * 0.45//Where to Place
         );
     }
     ctx.fillStyle = "none";
 }
 
-//Lives
+//Score
 function showScore() {
     ctx.fillStyle = "#000";
-    ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * .20 +'px Arial';
+    ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * 0.20 +'px Arial';
     ctx.textBaseline = 'bottom';
     ctx.fillText("SCORE: "+score, c_width/2, 50);
     ctx.fillStyle = "#fff";
