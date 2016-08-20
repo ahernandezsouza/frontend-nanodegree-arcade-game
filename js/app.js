@@ -200,7 +200,7 @@ function checkCollisions(){
             if (player.lives<3){player.lives+= 1}
             score += 50;
             resetGame();
-//            modal("wonGame",1);
+//          modal("wonGame",1);
         }
         if ((gemY === playerY) && !(gemX === playerX)){
             resetGame();
@@ -275,6 +275,7 @@ function restartGame(){
     showLines = messageLines["blank"];
     colorLines = 0;
     player.lives = d_lives;
+    score = 0;
 }
 
 //Start Game
