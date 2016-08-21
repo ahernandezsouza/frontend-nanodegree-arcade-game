@@ -1,11 +1,13 @@
 /* VARIABLES */
+//"use strict";
+
 var score = 0,
-    difficulty = 0,
-    c_width = 505, //Canvas Width
-    c_height = 606, //Canvas Height
+    C_WIDTH = 505, //Canvas Width
+    C_HEIGHT = 606, //Canvas Height
+    D_LIVES = 3,//Default Lives
     t_width = [6, 7], //Width in Tiles
     t_height = [7, 8],//Height in Tiles
-    d_lives = 3,//Default Lives
+    difficulty = 0,
     score = 0,// Points
     textLines = [], // Placeholder for Modal
     allEnemies = [], // Placeholder for Enemy Objects
@@ -17,8 +19,8 @@ var score = 0,
     "wonGame": ["YOU WON!","Press Spacebar to Play Again"],
     "selectGame": ["Select Difficulty", "E - Easy Level", "H - Hard Level"] // Messages for Modal
     },
-    tile = {"width" : function(){return c_width/t_width[difficulty];},// Tile Width in Pixels, divide canvas width by tile width (by difficulty)
-            "height" : function(){return c_height/t_height[difficulty];},// Tile Height in Pixels (Game Area), divide canvas height by tile height (by difficulty)
+    tile = {"width" : function(){return C_WIDTH/t_width[difficulty];},// Tile Width in Pixels, divide canvas width by tile width (by difficulty)
+            "height" : function(){return C_HEIGHT/t_height[difficulty];},// Tile Height in Pixels (Game Area), divide canvas height by tile height (by difficulty)
             "y": function(y){
                 return (1 + y) * tile.height(); //Convert Pixels to Tiles - Height
             },
@@ -63,7 +65,7 @@ var Player = function(x, y) {
     this.y = tile.y(y)-10; // set pixels by y tile
     this.speed = 1; // set Player speed to control if the player moves or not
     this.sprite = 'images/char-cat-girl.png'; //set Player image
-    this.lives = d_lives; // set initial default number of lives
+    this.lives = D_LIVES; // set initial default number of lives
 }
 
 Player.prototype.update = function() {
@@ -77,19 +79,19 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(keypressed) {
     switch (keypressed){
         case "left":
-            this.x-= tile.width()*player.speed;//'left'
+            this.x-= tile.width()*this.speed;//'left'
             if (this.x <= -tile.width()){this.x+= tile.width();}
             break;
         case "up":
-            this.y-= tile.height()*player.speed;//'up'
+            this.y-= tile.height()*this.speed;//'up'
             if (this.y <= -tile.height()){this.y+= tile.height();}
             break;
         case "right":
-            this.x+= tile.width()*player.speed;//'right'
+            this.x+= tile.width()*this.speed;//'right'
             if (this.x > tile.x(t_width[difficulty])){this.x-= tile.width();}
             break;
         case "down":
-            this.y+= tile.height()*player.speed;//'down'
+            this.y+= tile.height()*this.speed;//'down'
             if (this.y > tile.y(t_height[difficulty]-3)){this.y-= tile.height();}
             break;
         case "space":
@@ -225,7 +227,7 @@ function modal(message,active){
 //Clear Screen
 function clearScreen() {
     ctx.fillStyle = "#fff"; // clear screen on each rendering, so we don't leave trash behind
-    ctx.fillRect(0, 0, c_width, c_height);
+    ctx.fillRect(0, 0, C_WIDTH, C_HEIGHT);
 }
 
 //Show a Message in the middle of the screen
@@ -235,7 +237,7 @@ function showMessage() {
     ctx.shadowBlur = 10;
     ctx.shadowColor = "#4D4D4D";
     ctx.fillStyle = "#fff";
-    ctx.fillRect(25, 200, (c_width-50)*showLines, (c_height-350)*showLines); //Define Modal rectangle with shadow
+    ctx.fillRect(25, 200, (C_WIDTH-50)*showLines, (C_HEIGHT-350)*showLines); //Define Modal rectangle with shadow
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     ctx.shadowBlur = 0;
@@ -245,8 +247,8 @@ function showMessage() {
     ctx.textBaseline = 'bottom'; // Definition for the text
     for (var i = 0 ; i < textLines.length; ++i){
         ctx.fillText(textLines[i], ( //draw message text
-            c_width - ctx.measureText(textLines[i]).width)/2, // set line by line
-            (c_height/2) + i*40 //
+            C_WIDTH - ctx.measureText(textLines[i]).width)/2, // set line by line
+            (C_HEIGHT/2) + i*40 //
             );
     }
 }
@@ -275,7 +277,7 @@ function restartGame(){
     resetGame();
     textLines = messageLines.blank;
     showLines = 0;
-    player.lives = d_lives;
+    player.lives = D_LIVES;
     score = 0; // Setup for new game
 }
 
@@ -285,7 +287,7 @@ function startGame(){
     resetGame();
     textLines = messageLines.blank;
     showLines = 0;
-    player.lives = d_lives; // Start Game, first run
+    player.lives = D_LIVES; // Start Game, first run
 }
 
 //Random integer number between x and y
@@ -313,6 +315,6 @@ function showScore() { //Display Score
     ctx.fillStyle = "#000";
     ctx.font = 'bolder ' + (tile.height()/(tile.height()/170)) * 0.20 +'px Arial';
     ctx.textBaseline = 'bottom';
-    ctx.fillText("SCORE: "+score, c_width/2, 50);
+    ctx.fillText("SCORE: "+score, C_WIDTH/2, 50);
     ctx.fillStyle = "#fff";
 }
