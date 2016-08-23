@@ -42,9 +42,10 @@ var Enemy = function(dt, x, y) {
     this.sprite = 'images/enemy-bug.png'; // select image for the sprite
 };
 
-Enemy.prototype.update = function() {
+Enemy.prototype.update = function(dt) {
     this.x+= this.speed*this.dt; //regulates speed accordng to dt
-    if (this.x > tile.x(t_width[difficulty])){this.x = -tile.x(1);} //
+    if (this.x > tile.x(t_width[difficulty])){this.x = -tile.x(1);}
+
 };
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -104,6 +105,7 @@ Player.prototype.handleInput = function(keypressed) {
             if (this.y > tile.y(t_height[difficulty]-3)){this.y-= tile.height();}
             break;
         case "space":
+            this.lives = D_LIVES;
             restartGame(); // restart game
             break;
         case "e":
@@ -204,7 +206,7 @@ function checkCollisions(){
         var enemyX = Math.round(enemy.x/tile.width());
         var enemyY = Math.round(enemy.y/tile.height());
         if ((enemyY === playerY) && (enemyX === playerX)){
-           player.lives-= 1;
+            player.lives-= 1;
             resetGame();
         }
     });
@@ -283,7 +285,6 @@ function restartGame(){
     resetGame();
     textLines = messageLines.blank;
     showLines = 0;
-    player.lives = D_LIVES;
     score = 0; // Setup for new game
 }
 
@@ -293,7 +294,6 @@ function startGame(){
     resetGame();
     textLines = messageLines.blank;
     showLines = 0;
-    player.lives = D_LIVES; // Start Game, first run
 }
 
 //Random integer number between x and y
