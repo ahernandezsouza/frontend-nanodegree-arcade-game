@@ -55,6 +55,9 @@ Enemy.prototype.render = function() {
     );
 };
 
+Enemy.prototype.reset = function() {
+        this.speed = Rnd(3,6);
+};
 /////////////////////////////////////////////////////////////////////
 
 // Now write your own player class
@@ -74,6 +77,12 @@ Player.prototype.update = function() {
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite),
         this.x, this.y, tile.width(), (tile.height()/(tile.height()/170))); //adjust scale to difficulty
+};
+
+Player.prototype.reset = function () {
+    this.x = tile.x(0);
+    this.y = tile.y(t_height[difficulty]-3)-10;
+    this.speed = 1; // Reset Position each time the player dies
 };
 
 Player.prototype.handleInput = function(keypressed) {
@@ -103,7 +112,8 @@ Player.prototype.handleInput = function(keypressed) {
             break;
         case "h":
             difficulty = 1; // set to hard
-            startGame();
+            this.reset();
+            allEnemies.forEach(function(enemy){enemy.reset();});
             break;
     }
 };
@@ -264,12 +274,8 @@ function stopEntities(){
 
 //Reset Game
 function resetGame(){
-    allEnemies.forEach(function(enemy) {
-        enemy.speed = Rnd(3,6);
-    });
-    player.x = tile.x(0);
-    player.y = tile.y(t_height[difficulty]-3)-10;
-    player.speed = 1; // Reset Position each time the player dies
+    player.reset();
+    allEnemies.forEach(function(enemy){enemy.reset();});
 }
 
 //Restart Game
